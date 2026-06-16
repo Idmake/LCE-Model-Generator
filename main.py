@@ -1,7 +1,7 @@
 import json
 import tkinter.filedialog
 
-def get_file_prompt(title, type_name, type_extension):
+def get_ask_filename(title, type_name, type_extension):
     return tkinter.filedialog.askopenfilename(title=title, filetypes=[(type_name, type_extension)])
 
 def get_json_data(filepath):
@@ -22,7 +22,7 @@ def get_json_element_count(json_data):
     return len(elements)
 
 
-json_file = get_file_prompt(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
+json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
 if json_file != "":
     json_data = get_json_data(json_file)
     json_element_count = get_json_element_count(json_data)
