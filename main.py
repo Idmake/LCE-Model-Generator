@@ -53,6 +53,21 @@ def get_json_element_faces(element):
 def get_custom_json_element(element, key):
     if contains_key(element, key):
         return element[key]
+    
+def convert_to_whd(from_, to_):
+    # Convert to width, height, depth because it's what LCE uses
+    w = to_[0] - from_[0]
+    h = to_[1] - from_[1]
+    d = to_[2] - from_[2]
+
+    return [w, h, d]
+
+def convert_to_xyz(from_):
+    x =     from_[0]
+    y = 0 - from_[1] # Invert because of different coordinate systems
+    z =     from_[2]
+
+    return [x, y, z]
 
 
 json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
@@ -78,3 +93,10 @@ if json_element_count != -1:
         print("rotation:", rotation_)
         print("color:", color_)
         print("faces:", faces_)
+
+        whd = convert_to_whd(from_=from_, to_=to_)
+        xyz = convert_to_xyz(from_=from_)
+        print(xyz)
+        print(whd)
+
+        
