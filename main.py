@@ -50,6 +50,12 @@ def get_json_element_color(element):
 def get_json_element_faces(element):
     return element["faces"]
 
+def get_json_element_name(element):
+    if contains_key(element, "name"):
+        return element["name"]
+    
+    return "cube" # Fall back to default name
+
 def get_custom_json_element(element, key):
     if contains_key(element, key):
         return element[key]
@@ -80,6 +86,7 @@ if os.path.exists(json_file):
     
 if json_element_count != -1:
     for index, element in enumerate(json_data["elements"]):
+        name_ =         get_json_element_name(element)
         from_ =         get_json_element_from(element)
         to_ =           get_json_element_to(element)
         rotation_ =     get_json_element_rotation(element)
@@ -88,6 +95,7 @@ if json_element_count != -1:
 
         print("")
         print("-- ELEMENT", index, "--")
+        print("name:", name_)
         print("from:", from_)
         print("to:", to_)
         print("rotation:", rotation_)
