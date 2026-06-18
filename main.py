@@ -75,6 +75,15 @@ def convert_to_xyz(from_):
 
     return [x, y, z]
 
+def format_code(code):
+    new_code = ""
+
+    # In multi-line strings the preceding whitespaces are kept, remove them here
+    for line in code.splitlines():
+        new_code += line.strip() + "\n"
+
+    return new_code
+
 
 json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
 json_data = ""
@@ -107,14 +116,15 @@ if json_element_count != -1:
         xyz = convert_to_xyz(from_=from_)
 
         output_snippet += f"""
-        {name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);
-        float width = {whd[0]};
-        float height = {whd[1]};
-        float depth = {whd[2]};
-        vector<float> xyz = {{{xyz[0]}, {xyz[1]}, {xyz[2]}}};
-        {name_}->addBox(xyz[0], xyz[1], xyz[2], width, height, depth);
-
+            {name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);
+            float width = {whd[0]};
+            float height = {whd[1]};
+            float depth = {whd[2]};
+            vector<float> xyz = {{{xyz[0]}, {xyz[1]}, {xyz[2]}}};
+            {name_}->addBox(xyz[0], xyz[1], xyz[2], width, height, depth);
         """
+
+    output_snippet = format_code(output_snippet)
 
     with open("output.txt", "w") as file:
         file.write(output_snippet)
