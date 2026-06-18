@@ -1,8 +1,8 @@
 import json
 import tkinter.filedialog
 
-def get_ask_filename(title, type_name, type_extension):
-    return tkinter.filedialog.askopenfilename(title=title, filetypes=[(type_name, type_extension)])
+def get_ask_filename(title, filetypes):
+    return tkinter.filedialog.askopenfilename(title=title, filetypes=filetypes)
 
 def get_json_data(filepath):
     try:
@@ -151,11 +151,9 @@ def generate_snippet(json_data):
 
 
 
-json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.*")
+json_file = get_ask_filename(title="Select your exported JSON file", filetypes=[("JSON File", "*.json"), ("All Files", "*.*")])
 
-if json_file == "":
-    pass
-else:
+if json_file != "":
     json_data = ""
     json_element_count = -1
     output_snippet = ""
