@@ -1,6 +1,5 @@
 import json
 import tkinter.filedialog
-import os.path
 
 def get_ask_filename(title, type_name, type_extension):
     return tkinter.filedialog.askopenfilename(title=title, filetypes=[(type_name, type_extension)])
@@ -14,13 +13,13 @@ def get_json_data(filepath):
         
     except UnicodeDecodeError:
         print("Trying to read this file caused a UnicodeDecodeError, is", filepath, "the correct file?")
-        return None
+        return ""
     except json.JSONDecodeError:
         print("Trying to read this file caused a JSONDecodeError, is", filepath, "the correct file?")
-        return None
+        return ""
     except ValueError:
         print("Trying to read this file caused an unknown error, is", filepath, "the correct file?")
-        return None
+        return ""
     
 def get_json_element_count(json_data):
     elements = json_data.get("elements")
@@ -75,7 +74,7 @@ def convert_to_xyz(from_):
 
     return [x, y, z]
 
-def format_code(code):
+def format_code(code: str):
     new_code = ""
     lines = code.splitlines()
     line_count = len(lines)
@@ -121,7 +120,6 @@ def generate_snippet(json_data):
 
         whd = convert_to_whd(from_=from_, to_=to_)
         xyz = convert_to_xyz(from_=from_)
-
         width = whd[0]
         height = whd[1]
         depth = whd[2]
@@ -132,8 +130,8 @@ def generate_snippet(json_data):
         # Don't reinitialize already used element / ModelPart!
         if contains_value(used_element_names, name_) == False:
 
-            # Add spacing after each new part but not on the first line
-            if index != 0: snippet += f"\n"
+            # Add spacing before each new part but not on the first line
+            if index != 0: snippet += "\n"
             snippet += f"{name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);"
 
         snippet += f"""
@@ -141,27 +139,29 @@ def generate_snippet(json_data):
             height = {height};
             depth = {depth};
             {name_}->addBox({x}, {y}, {z}, width, height, depth);"""
+        
+        if index != len(json_data["elements"]) - 1:
+            snippet += "\n"
 
-
-        snippet = format_code(snippet)
         used_element_names.append(name_)
 
+    snippet = format_code(snippet)
     return snippet
 
 
 
-json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
-json_data = ""
-json_element_count = -1
-output_snippet = ""
-used_element_names = [] # Keep track of used element names, so we don't reinitialize them in the game
+json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.*")
 
-if os.path.exists(json_file): 
+if json_file == "":
+    pass
+else:
+    json_data = ""
+    json_element_count = -1
+    output_snippet = ""
+    used_element_names = [] # Keep track of used element names, so we don't reinitialize them in the game
     json_data = get_json_data(json_file)
-    json_element_count = get_json_element_count(json_data)
-    output_snippet = generate_snippet(json_data)
 
-    with open("output.txt", "w") as file:
-        file.write(output_snippet)
-
-        
+    if json_data != "" and get_json_element_count(json_data) != -1:
+        output_snippet = generate_snippet(json_data)
+        with open("output.txt", "w") as file:
+            file.write(output_snippet)
