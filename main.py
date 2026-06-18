@@ -77,10 +77,16 @@ def convert_to_xyz(from_):
 
 def format_code(code):
     new_code = ""
+    lines = code.splitlines()
+    line_count = len(lines)
 
     # In multi-line strings the preceding whitespaces are kept, remove them here
-    for line in code.splitlines():
-        new_code += line.strip() + "\n"
+    for index, line in enumerate(lines):
+        new_code += line.strip()
+
+        # Only add a new line if its not the last one
+        if index != line_count - 1:
+            new_code += "\n"
 
     return new_code
 
