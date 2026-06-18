@@ -84,17 +84,16 @@ def format_code(code):
 
     return new_code
 
+def contains_value(list, value):
+    for item in list:
+        if item == value:
+            return True
+        
+    return False
 
-json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
-json_data = ""
-json_element_count = -1
-output_snippet = ""
+def generate_snippet(json_data):
+    snippet = ""
 
-if os.path.exists(json_file): 
-    json_data = get_json_data(json_file)
-    json_element_count = get_json_element_count(json_data)
-    
-if json_element_count != -1:
     for index, element in enumerate(json_data["elements"]):
         name_ =         get_json_element_name(element)
         from_ =         get_json_element_from(element)
@@ -115,16 +114,34 @@ if json_element_count != -1:
         whd = convert_to_whd(from_=from_, to_=to_)
         xyz = convert_to_xyz(from_=from_)
 
-        output_snippet += f"""
-            {name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);
-            float width = {whd[0]};
-            float height = {whd[1]};
-            float depth = {whd[2]};
-            vector<float> xyz = {{{xyz[0]}, {xyz[1]}, {xyz[2]}}};
-            {name_}->addBox(xyz[0], xyz[1], xyz[2], width, height, depth);
-        """
+        # Don't reinitialize already used element / ModelPart!
+        if contains_value(used_element_names, name_) == False:
+            snippet += f"{name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);"
+            snippet += f"\n"
 
-    output_snippet = format_code(output_snippet)
+        snippet += f""" float width = {whd[0]};
+                        float width = {whd[1]};
+                        float width = {whd[2]};
+                        {name_}->addBox({xyz[0]}, {xyz[1]}, {xyz[2]}, width, height, depth);"""
+        
+        snippet = format_code(snippet)
+        snippet += "\n"
+        used_element_names.append(name_)
+
+    return snippet
+
+
+
+json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
+json_data = ""
+json_element_count = -1
+output_snippet = ""
+used_element_names = [] # Keep track of used element names, so we don't reinitialize them in the game
+
+if os.path.exists(json_file): 
+    json_data = get_json_data(json_file)
+    json_element_count = get_json_element_count(json_data)
+    output_snippet = generate_snippet(json_data)
 
     with open("output.txt", "w") as file:
         file.write(output_snippet)
