@@ -140,7 +140,8 @@ def generate_snippet(json_data):
             depth = {depth};
             {name_}->addBox({x}, {y}, {z}, width, height, depth);"""
         
-        if index != len(json_data["elements"]) - 1:
+        # Not the last line, add a new one
+        if index != get_json_element_count(json_data) - 1:
             snippet += "\n"
 
         used_element_names.append(name_)
