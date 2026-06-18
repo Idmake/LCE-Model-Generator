@@ -79,6 +79,7 @@ def convert_to_xyz(from_):
 json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
 json_data = ""
 json_element_count = -1
+output_snippet = ""
 
 if os.path.exists(json_file): 
     json_data = get_json_data(json_file)
@@ -104,7 +105,18 @@ if json_element_count != -1:
 
         whd = convert_to_whd(from_=from_, to_=to_)
         xyz = convert_to_xyz(from_=from_)
-        print(xyz)
-        print(whd)
+
+        output_snippet += f"""
+        {name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);
+        float width = {whd[0]};
+        float height = {whd[1]};
+        float depth = {whd[2]};
+        vector<float> xyz = {{{xyz[0]}, {xyz[1]}, {xyz[2]}}};
+        {name_}->addBox(xyz[0], xyz[1], xyz[2], width, height, depth);
+
+        """
+
+    with open("output.txt", "w") as file:
+        file.write(output_snippet)
 
         
