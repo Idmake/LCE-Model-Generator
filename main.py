@@ -93,6 +93,8 @@ def contains_value(list, value):
 
 def generate_snippet(json_data):
     snippet = ""
+    snippet += f"float width, height, depth;\n"
+    snippet += "\n"
 
     for index, element in enumerate(json_data["elements"]):
         name_ =         get_json_element_name(element)
@@ -114,18 +116,28 @@ def generate_snippet(json_data):
         whd = convert_to_whd(from_=from_, to_=to_)
         xyz = convert_to_xyz(from_=from_)
 
+        width = whd[0]
+        height = whd[1]
+        depth = whd[2]
+        x = xyz[0]
+        y = xyz[1]
+        z = xyz[2]
+
         # Don't reinitialize already used element / ModelPart!
         if contains_value(used_element_names, name_) == False:
-            snippet += f"{name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);"
-            snippet += f"\n"
 
-        snippet += f""" float width = {whd[0]};
-                        float width = {whd[1]};
-                        float width = {whd[2]};
-                        {name_}->addBox({xyz[0]}, {xyz[1]}, {xyz[2]}, width, height, depth);"""
-        
+            # Add spacing after each new part but not on the first line
+            if index != 0: snippet += f"\n"
+            snippet += f"{name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);"
+
+        snippet += f"""
+            width = {width};
+            height = {height};
+            depth = {depth};
+            {name_}->addBox({x}, {y}, {z}, width, height, depth);"""
+
+
         snippet = format_code(snippet)
-        snippet += "\n"
         used_element_names.append(name_)
 
     return snippet
