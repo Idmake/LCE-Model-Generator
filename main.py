@@ -22,30 +22,59 @@ def get_json_data(filepath):
         print("Trying to read this file caused an unknown error, is", filepath, "the correct file?")
         return None
     
-def get_json_element_data(json_data, index):
-    elements = json_data.get("elements")
-    if index < len(elements):
-        return elements[index]
-    
-    print("Specified element index is", index, "even though there are only", len(elements), "elements.")
-
 def get_json_element_count(json_data):
     elements = json_data.get("elements")
     if elements != None:
         return len(elements)
     
     print("The specified JSON data doesn't have \"elements\".")
-    return None
+    return -1
+
+def contains_key(element, key):
+    key = key
+    return str(element).find(key) != -1 
+
+def get_json_element_from(element):
+    return element["from"]
+
+def get_json_element_to(element):
+    return element["to"]
+
+def get_json_element_rotation(element):
+    if contains_key(element, "rotation"):
+        return element["rotation"]
+
+def get_json_element_color(element):
+    return element["color"]
+
+def get_json_element_faces(element):
+    return element["faces"]
+
+def get_custom_json_element(element, key):
+    if contains_key(element, key):
+        return element[key]
 
 
 json_file = get_ask_filename(title="Select your exported JSON file", type_name="JSON File", type_extension="*.json")
+json_data = ""
+json_element_count = -1
+
 if os.path.exists(json_file): 
-
     json_data = get_json_data(json_file)
+    json_element_count = get_json_element_count(json_data)
+    
+if json_element_count != -1:
+    for index, element in enumerate(json_data["elements"]):
+        from_ =         get_json_element_from(element)
+        to_ =           get_json_element_to(element)
+        rotation_ =     get_json_element_rotation(element)
+        color_ =        get_json_element_color(element)
+        faces_ =        get_json_element_faces(element)
 
-    if json_data != None:
-        json_element_count = get_json_element_count(json_data)
-        
-        if json_element_count != None:
-            for element in json_data["elements"]:
-                print(str(element) + "\n\n")
+    print("")
+    print("-- ELEMENT", index, "--")
+    print("from:", from_)
+    print("to:", to_)
+    print("rotation:", rotation_)
+    print("color:", color_)
+    print("faces:", faces_)
