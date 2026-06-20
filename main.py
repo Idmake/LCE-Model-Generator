@@ -59,7 +59,7 @@ def get_custom_json_element(element, key):
     if contains_key(element, key):
         return element[key]
     
-def convert_to_whd(from_, to_):
+def convert_to_scale(from_, to_):
     # Convert to width, height, depth because it's what LCE uses
     w = to_[0] - from_[0]
     h = to_[1] - from_[1]
@@ -67,10 +67,11 @@ def convert_to_whd(from_, to_):
 
     return [w, h, d]
 
-def convert_to_xyz(from_):
-    x =     from_[0]
-    y = 0 - from_[1] # Invert because of different coordinate systems
-    z =     from_[2]
+def convert_to_xyz(from_, whd):
+    # Blockbench and LCE use different coordinate systems so we have to convert the positions
+    x =     from_[0] - whd[0] / 2
+    y =     from_[1] - whd[1] / 2
+    z =     from_[2] - whd[2] / 2
 
     return [x, y, z]
 
@@ -98,7 +99,7 @@ def contains_value(list, value):
 
 def generate_snippet(json_data):
     snippet = ""
-    snippet += f"float width, height, depth;\n"
+    snippet += f"double width, height, depth;\n"
     snippet += "\n"
 
     for index, element in enumerate(json_data["elements"]):
@@ -118,14 +119,13 @@ def generate_snippet(json_data):
         print("color:", color_)
         print("faces:", faces_)
 
-        whd = convert_to_whd(from_=from_, to_=to_)
-        xyz = convert_to_xyz(from_=from_)
+        whd = convert_to_scale(from_=from_, to_=to_)
         width = whd[0]
         height = whd[1]
         depth = whd[2]
-        x = xyz[0]
-        y = xyz[1]
-        z = xyz[2]
+        x = from_[0]
+        y = -from_[1]
+        z = from_[2]
 
         # Don't reinitialize already used element / ModelPart!
         if contains_value(used_element_names, name_) == False:
@@ -134,11 +134,15 @@ def generate_snippet(json_data):
             if index != 0: snippet += "\n"
             snippet += f"{name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);"
 
+        # This "snippet" part is hard to manage, and also doesn't look that good.
+        # If anyone reading this has a better idea for this then you're welcome to share it.
         snippet += f"""
             width = {width};
             height = {height};
             depth = {depth};
-            {name_}->addBox({x}, {y}, {z}, width, height, depth);"""
+            {name_}->addBox({x} - 16 / 2, {y - height} - 16 / 2, {z} - 16 / 2, width, height, depth);
+            {name_}->y += (32.5);""" # // Yes, this seems to be a magic value, i literally couldn't find any variable for it. May not be perfect.
+    
         
         # Not the last line, add a new one
         if index != get_json_element_count(json_data) - 1:
@@ -146,6 +150,7 @@ def generate_snippet(json_data):
 
         used_element_names.append(name_)
 
+    # End of the snippet, remove indentation created by multi-line strings
     snippet = format_code(snippet)
     return snippet
 
