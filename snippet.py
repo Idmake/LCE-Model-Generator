@@ -1,4 +1,4 @@
-from json_data import get_json_element_color, get_json_element_count, get_json_element_faces, get_json_element_from, get_json_element_name, get_json_element_rotation, get_json_element_to
+from json_elements import get_json_element_color, get_json_element_count, get_json_element_faces, get_json_element_from, get_json_element_name, get_json_element_rotation, get_json_element_to
 from LCE_convert import convert_to_scale
 from contains_value import contains_value
 import shared_variables
