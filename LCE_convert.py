@@ -8,8 +8,8 @@ def convert_to_scale(from_, to_):
 
 def convert_to_xyz(from_, whd):
     # Blockbench and LCE use different coordinate systems so we have to convert the positions
-    x =     from_[0] - (16 / 2)
+    x =     from_[0]
     y =    -from_[1] - whd[1] - (16 / 2)
-    z =     from_[2] - (16 / 2)
+    z =     from_[2]
 
     return [x, y, z]
