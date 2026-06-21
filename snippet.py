@@ -1,7 +1,7 @@
-from json_elements import get_json_element_color, get_json_element_count, get_json_element_faces, get_json_element_from, get_json_element_name, get_json_element_rotation, get_json_element_to
 from LCE_convert import convert_to_scale
 from contains_value import contains_value
 import shared_variables
+import json_elements
 
 def format_code(code: str):
     new_code = ""
@@ -25,19 +25,17 @@ def generate_snippet(json_data):
     snippet += "\n"
 
     for index, element in enumerate(json_data["elements"]):
-        name_ =         get_json_element_name(element)
-        from_ =         get_json_element_from(element)
-        to_ =           get_json_element_to(element)
-        rotation_ =     get_json_element_rotation(element)
-        color_ =        get_json_element_color(element)
-        faces_ =        get_json_element_faces(element)
+        name_ =         json_elements.get_name(element)
+        from_ =         json_elements.get_from(element)
+        to_ =           json_elements.get_to(element)
+        color_ =        json_elements.get_color(element)
+        faces_ =        json_elements.get_faces(element)
 
         print("")
         print("-- ELEMENT", index, "--")
         print("name:", name_)
         print("from:", from_)
         print("to:", to_)
-        print("rotation:", rotation_)
         print("color:", color_)
         print("faces:", faces_)
 
@@ -70,7 +68,7 @@ def generate_snippet(json_data):
     
         
         # Not the last line, add a new one
-        if index != get_json_element_count(json_data) - 1:
+        if index != json_elements.get_element_count(json_data) - 1:
             snippet += "\n"
 
         shared_variables.used_element_names.append(name_)
