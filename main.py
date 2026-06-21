@@ -8,10 +8,11 @@ import shared_variables
 json_file = get_ask_filename(title="Select your Blockbench model", filetypes=[("Blockbench Project", "*.bbmodel"), ("All Files", "*.*")])
 
 if json_file != "":
+    shared_variables.used_element_names = [] # Keep track of used element names, so we don't reinitialize them in the game
+    
     json_data = ""
     json_element_count = -1
     output_snippet = ""
-    shared_variables.used_element_names = [] # Keep track of used element names, so we don't reinitialize them in the game
     json_data = get_json_data(json_file)
 
     if json_data != "" and get_element_count(json_data) != -1:
