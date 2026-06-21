@@ -4,7 +4,7 @@ from snippet import generate_snippet
 import shared_variables
     
 
-json_file = get_ask_filename(title="Select your exported JSON file", filetypes=[("JSON File", "*.json"), ("All Files", "*.*")])
+json_file = get_ask_filename(title="Select your Blockbench model", filetypes=[("Blockbench Project", "*.bbmodel"), ("All Files", "*.*")])
 
 if json_file != "":
     json_data = ""

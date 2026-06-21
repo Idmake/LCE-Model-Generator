@@ -65,7 +65,7 @@ def generate_snippet(json_data):
             x = {x};
             y = {y};
             z = {z};
-            {name_}->addBox(x - (16 / 2), y - height - (16 / 2), z - (16 / 2), width, height, depth);
+            {name_}->addBox(x, y - height - (16 / 2), z, width, height, depth);
             {name_}->y += (32.5);""" # // Yes, this seems to be a magic value, i literally couldn't find any variable for it. May not be perfect.
     
         
