@@ -2,6 +2,7 @@ from LCE_convert import convert_to_scale
 from contains_value import contains_value
 import shared_variables
 import json_elements
+import json_textures
 
 def format_code(code: str):
     new_code = ""
@@ -23,6 +24,21 @@ def generate_snippet(json_data):
     snippet += f"double width, height, depth;\n"
     snippet += f"double x, y, z;\n"
     snippet += "\n"
+
+    for index, texture in enumerate(json_data["textures"]):
+        id_ =           json_textures.get_id(texture)
+        width_ =        json_textures.get_width(texture)
+        height_ =       json_textures.get_height(texture)
+        uv_width =      json_textures.get_uv_width(texture)
+        uv_height =     json_textures.get_uv_height(texture)
+
+        print("")
+        print("-- TEXTURE", index, "--")
+        print("id:", id_)
+        print("width:", width_)
+        print("height:", height_)
+        print("uv_width:", uv_width)
+        print("uv_height:", uv_height)
 
     for index, element in enumerate(json_data["elements"]):
         name_ =         json_elements.get_name(element)
