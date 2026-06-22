@@ -3,6 +3,7 @@ from contains_value import contains_value
 import shared_variables
 import json_elements
 import json_textures
+import json_element_faces
 
 def format_code(code: str):
     new_code = ""
@@ -46,6 +47,8 @@ def generate_snippet(json_data):
         to_ =           json_elements.get_to(element)
         color_ =        json_elements.get_color(element)
         faces_ =        json_elements.get_faces(element)
+        texture_id_ =   json_element_faces.get_texture_id(element)
+        uv_offset_ =    json_element_faces.get_uv_offset(element)
 
         print("")
         print("-- ELEMENT", index, "--")
@@ -54,6 +57,8 @@ def generate_snippet(json_data):
         print("to:", to_)
         print("color:", color_)
         print("faces:", faces_)
+        print("texture_id:", texture_id_)
+        print("uv_offset:", uv_offset_)
 
         whd = convert_to_scale(from_=from_, to_=to_)
         width = whd[0]
@@ -62,13 +67,25 @@ def generate_snippet(json_data):
         x = from_[0]
         y = -from_[1]
         z = from_[2]
+        u_offset = uv_offset_[0]
+        v_offset = uv_offset_[1]
+
+        if texture_id_ < json_textures.get_texture_count(json_data):
+            uv_width = json_textures.get_uv_width(texture)
+            uv_height = json_textures.get_uv_height(texture)
+        else:
+            uv_width = 0
+            uv_height = 0
+            
+            print("Failed to get UV size as the given texture id (index) is",
+                    texture_id_, ", even though there are only", json_textures.get_texture_count(json_data), "textures available.")
 
         # Don't reinitialize already used element / ModelPart!
         if contains_value(shared_variables.used_element_names, name_) == False:
 
             # Add spacing before each new part but not on the first line
             if index != 0: snippet += "\n"
-            snippet += f"{name_} = (new ModelPart(this, 0, 0))->setTexSize(0, 0);"
+            snippet += f"{name_} = (new ModelPart(this, {u_offset}, {v_offset}))->setTexSize({uv_width}, {uv_height});"
 
         # This "snippet" part is hard to manage, and also doesn't look that good.
         # If anyone reading this has a better idea for this then you're welcome to share it.
